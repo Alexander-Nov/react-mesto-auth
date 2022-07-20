@@ -1,0 +1,5 @@
+.popupSuccess_isOpened {
+  /* display: flex; */
+  visibility: visible;
+  opacity: 1;
+}
