@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Login({ onEnterUser }) {
+function Login({ onEnterUser, isLoading }) {
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -28,7 +28,7 @@ function Login({ onEnterUser }) {
         <fieldset className="login__fieldset">
           <input type="email" onChange={handleEmail} value={email} className="login__input login__inputName" placeholder="Email"/>
           <input type="password" onChange={handlePass} value={password} className="login__input login__inputPass" placeholder="Пароль"/>
-          <button type="submit" className="login__submitButton">Войти</button>
+          <button type="submit" className="login__submitButton">{isLoading ? "Отправляем запрос..." : "Войти"}</button>
         </fieldset>
       </form>
 

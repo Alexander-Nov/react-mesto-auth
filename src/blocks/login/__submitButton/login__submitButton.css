@@ -9,3 +9,9 @@
 .login__submitButton:hover {
   cursor: pointer;
 }
+
+@media screen and (max-width: 460px) {
+  .login__submitButton{
+    max-width: 260px;
+  }
+}

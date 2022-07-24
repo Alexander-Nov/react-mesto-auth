@@ -36,7 +36,6 @@ export const signin = (password, email) => {
   .then((response => response.json()))
   .then((data) => {
     if (data.token){
-      console.log(`получили токен ${data.token}`);
       localStorage.setItem('token', data.token);
       return data;
     }
@@ -55,7 +54,6 @@ export const checkToken = (token) => {
   .then((response => response.json()))
   .then((res) => {
     if (res.data.email){
-      console.log(res.data.email);
       return res;
     }
   })

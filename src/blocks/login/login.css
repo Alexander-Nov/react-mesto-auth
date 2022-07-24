@@ -2,6 +2,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 358px;
+  max-width: 358px;
   box-sizing: border-box;
+}
+
+@media screen and (max-width: 460px) {
+  .login {
+    max-width: 320px;
+  }
 }

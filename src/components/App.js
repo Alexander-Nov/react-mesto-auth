@@ -15,6 +15,7 @@ import Register from "./Register.js";
 import ProtectedRoute from "./ProtectedRoute";
 import InfoTooltip from "./InfoTooltip.js";
 import { register, signin, checkToken} from '../utils/auth';
+import HeaderMobileMenu from "./HeaderMobileMenu.js";
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
@@ -26,12 +27,13 @@ function App() {
     React.useState(false);
   const [isImagePopupOpen, setIsImagePopupOpen] = React.useState(false);
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
+  const [isMobileMenuVisible, setIsMobileMenuVisible] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState({});
   const [willBeDeletedCard, setWillBeDeletedCard] = React.useState({});
   const [currentUser, setCurrentUser] = React.useState({});
   const [cards, setCards] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [loggedIn, setLoggedIn] = React.useState(false);
+  const [loggedIn, setLoggedIn] = React.useState(localStorage.getItem('token') ? true : false);
   const [isRegistered, setIsRegistered] = React.useState(false);
   const [userEmail, setUserEmail] = React.useState("");
 
@@ -75,7 +77,6 @@ function App() {
 
   React.useEffect(() => {
     const jwt = localStorage.getItem('token');
-    console.log(jwt);
     if (jwt) {
       checkToken(jwt)
       .then((res) => {
@@ -84,34 +85,24 @@ function App() {
         history.push('/');
       })
       .catch((err) => {
+        setLoggedIn(false);
         console.log(err);
       });
     }
   }, []);
 
   React.useEffect(() => {
-    api
-      .getInitialCards()
-      .then((resCardsList) => {
+    if (loggedIn) {
+      Promise.all([api.getInitialCards(), api.getUserData()])
+      .then(([resCardsList, userData]) => {
         setCards(resCardsList);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
-  React.useEffect(() => {
-    api
-      .getUserData()
-      .then((userData) => {
         setCurrentUser(userData);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, []);
-
-
+    }
+  }, [loggedIn]);
 
   const handleEditProfileClick = () => {
     setIsEditProfilePopupOpen(true);
@@ -189,23 +180,25 @@ function App() {
       });
   };
 
-  // функции регистрации, авторизации и выхода из приложения
   const history = useHistory();
 
   const handleSignUpSubmit = ({ email, password }) => {
-    console.log("Отправляем запрос на сервер");
+    setIsLoading(true);
     register(password, email)
     .then ((res) => {
-      console.log("Ура! Мы зарегистрировались!");
       setIsRegistered(true);
       setIsInfoTooltipOpen(true);
       history.push('/sign-in');
+      setIsLoading(false);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      setIsLoading(false);
+      console.log(err)
+    });
   };
 
   const handleSignInSubmit = ({ email, password }) => {
-    console.log("Пробуем авторизоваться");
+    setIsLoading(true);
     signin(password, email)
     .then ((data) => {
       if (data) {
@@ -214,39 +207,67 @@ function App() {
           setUserEmail(res.data.email);
           setLoggedIn(true);
           history.push('/');
+          setIsLoading(false);
         })
         .catch((err) => {
+          setIsLoading(false);
           console.log(err);
         });
       } else {
         setIsRegistered(false);
         setIsInfoTooltipOpen(true);
+        setIsLoading(false);
       }
 
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      setIsLoading(false);
+      console.log(err)
+    });
   };
 
   const handleSignOut = () => {
     setLoggedIn(false);
+    setIsMobileMenuVisible(false);
     localStorage.removeItem('token');
     history.push('/sign-in');
   };
 
+  const handleMobileMenuOpenClose = () => {
+    setIsMobileMenuVisible(!isMobileMenuVisible);
+  };
+
+
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header
+        <HeaderMobileMenu
         email={userEmail}
-        onSignOut={handleSignOut}/>
+        isVisible={isMobileMenuVisible}
+        onSignOut={handleSignOut}
+        />
+
+        <Header
+          email={userEmail}
+          onSignOut={handleSignOut}
+          onMenuOpen={handleMobileMenuOpenClose}
+          menuButtonStyle={isMobileMenuVisible}
+        />
 
         <Switch>
           <Route path="/sign-in">
-            <Login onEnterUser={handleSignInSubmit}/>
+            <Login
+              onEnterUser={handleSignInSubmit}
+              isLoading={isLoading}
+            />
           </Route>
 
           <Route path="/sign-up">
-            <Register onAddUser={handleSignUpSubmit}/>
+            <Register
+              onAddUser={handleSignUpSubmit}
+              isLoading={isLoading}
+            />
           </Route>
 
           <ProtectedRoute

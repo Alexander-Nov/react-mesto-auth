@@ -1,6 +1,7 @@
 import React from 'react';
+import { Link, Route } from 'react-router-dom';
 
-function Register({ onAddUser }) {
+function Register({ onAddUser, isLoading }) {
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -28,7 +29,13 @@ function Register({ onAddUser }) {
         <fieldset className="register__fieldset">
           <input type="email" onChange={handleEmail} value={email} className="register__input register__inputName" placeholder="Email"/>
           <input type="password" onChange={handlePass} value={password} className="register__input register__inputPass" placeholder="Пароль"/>
-          <button type="submit" className="register__submitButton">Зарегистрироваться</button>
+          <button type="submit" className="register__submitButton">{isLoading ? "Отправляем запрос..." : "Зарегистрироваться"}</button>
+          <div className="register__sign-in-alternative">
+            <p className="register__sign-in-text">
+              Уже зарегистрированы?&nbsp;
+              <Link to='sign-in' className="register__sign-in-link">Войти</Link>
+            </p>
+          </div>
         </fieldset>
       </form>
     </div>

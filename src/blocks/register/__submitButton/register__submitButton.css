@@ -9,3 +9,9 @@
 .register__submitButton:hover {
   cursor: pointer;
 }
+
+@media screen and (max-width: 460px) {
+  .register__submitButton {
+    max-width: 260px;
+  }
+}
