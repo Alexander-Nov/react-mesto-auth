@@ -3,9 +3,7 @@ import React from "react";
 function ImagePopup({card, onClose, isOpened}) {
   return (
     <section
-      className={`popup popup_type_image popup_dark-background popup_centered ${
-        isOpened && "popup_is-opened"
-      }`}
+      className={`popup popup_type_image popup_dark-background popup_centered ${isOpened ? "popup_is-opened" : ""}`}
     >
       <div className="popup__container">
         <button
