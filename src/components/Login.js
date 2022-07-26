@@ -24,7 +24,7 @@ function Login({ onEnterUser, isLoading }) {
   return (
     <div className="login">
       <h2 className="login__title">Вход</h2>
-      <form className="login__form" onSubmit={handleSubmit}>
+      <form className="login__form" onSubmit={handleSubmit} name="loginForm">
         <fieldset className="login__fieldset">
           <input type="email" onChange={handleEmail} value={email} className="login__input login__inputName" placeholder="Email"/>
           <input type="password" onChange={handlePass} value={password} className="login__input login__inputPass" placeholder="Пароль"/>

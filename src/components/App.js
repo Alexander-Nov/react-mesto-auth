@@ -14,7 +14,7 @@ import Login from "./Login.js";
 import Register from "./Register.js";
 import ProtectedRoute from "./ProtectedRoute";
 import InfoTooltip from "./InfoTooltip.js";
-import { register, signin, checkToken} from '../utils/auth';
+import { register, signin, checkToken } from '../utils/auth';
 import HeaderMobileMenu from "./HeaderMobileMenu.js";
 
 function App() {
@@ -27,6 +27,7 @@ function App() {
     React.useState(false);
   const [isImagePopupOpen, setIsImagePopupOpen] = React.useState(false);
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
+  const [infoTooltipMessage, setInfoTooltipMessage] = React.useState("");
   const [isMobileMenuVisible, setIsMobileMenuVisible] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState({});
   const [willBeDeletedCard, setWillBeDeletedCard] = React.useState({});
@@ -36,6 +37,7 @@ function App() {
   const [loggedIn, setLoggedIn] = React.useState(localStorage.getItem('token') ? true : false);
   const [isRegistered, setIsRegistered] = React.useState(false);
   const [userEmail, setUserEmail] = React.useState("");
+  const history = useHistory();
 
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) => i._id === currentUser._id); // проверяем, есть ли уже лайк на этой карточке
@@ -75,6 +77,7 @@ function App() {
     setIsConfirmDeletionPopupOpen(true);
   }
 
+
   React.useEffect(() => {
     const jwt = localStorage.getItem('token');
     if (jwt) {
@@ -89,7 +92,7 @@ function App() {
         console.log(err);
       });
     }
-  }, []);
+  }, [history]);
 
   React.useEffect(() => {
     if (loggedIn) {
@@ -180,20 +183,21 @@ function App() {
       });
   };
 
-  const history = useHistory();
 
   const handleSignUpSubmit = ({ email, password }) => {
     setIsLoading(true);
     register(password, email)
     .then ((res) => {
-      setIsRegistered(true);
-      setIsInfoTooltipOpen(true);
-      history.push('/sign-in');
-      setIsLoading(false);
+        setIsRegistered(true);
+        setInfoTooltipMessage("Вы успешно зарегистрировались!");
+        setIsInfoTooltipOpen(true);
+        history.push('/sign-in');
+        setIsLoading(false);
     })
     .catch((err) => {
+      setInfoTooltipMessage(`Ошибка при регистрации: ${err}`);
+      setIsInfoTooltipOpen(true);
       setIsLoading(false);
-      console.log(err)
     });
   };
 
@@ -209,20 +213,14 @@ function App() {
           history.push('/');
           setIsLoading(false);
         })
-        .catch((err) => {
-          setIsLoading(false);
-          console.log(err);
-        });
-      } else {
-        setIsRegistered(false);
-        setIsInfoTooltipOpen(true);
-        setIsLoading(false);
       }
 
     })
     .catch((err) => {
       setIsLoading(false);
-      console.log(err)
+      setIsRegistered(false);
+      setInfoTooltipMessage(`Ошибка входа: ${err}. Проверьте вводимые данные и попробуйте еще раз.`);
+      setIsInfoTooltipOpen(true);
     });
   };
 
@@ -326,6 +324,7 @@ function App() {
         isOpen={isInfoTooltipOpen}
         isRegistered={isRegistered}
         onClose={closeAllPopups}
+        messageText={infoTooltipMessage}
         />
       </div>
     </CurrentUserContext.Provider>

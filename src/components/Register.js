@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Route } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 function Register({ onAddUser, isLoading }) {
 
@@ -25,7 +25,7 @@ function Register({ onAddUser, isLoading }) {
   return (
     <div className="register">
       <h2 className="register__title">Регистрация</h2>
-      <form className="register__form" onSubmit={handleSubmit}>
+      <form className="register__form" onSubmit={handleSubmit} name="registerForm">
         <fieldset className="register__fieldset">
           <input type="email" onChange={handleEmail} value={email} className="register__input register__inputName" placeholder="Email"/>
           <input type="password" onChange={handlePass} value={password} className="register__input register__inputPass" placeholder="Пароль"/>
